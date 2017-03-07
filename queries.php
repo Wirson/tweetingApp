@@ -1,0 +1,11 @@
+CREATE DATABASE twitter;
+
+CREATE TABLE Tweet
+(
+id INT AUTO_INCREMENT,
+userId INT NOT NULL,
+text TEXT,
+creationDate DATE,
+PRIMARY KEY(id),
+FOREIGN KEY(userId) REFERENCES Users(id)
+);
