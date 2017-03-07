@@ -25,6 +25,7 @@ composer.phar
 .nfs*
 
 ### NetBeans ###
+nbproject/
 nbproject/private/
 build/
 nbbuild/
