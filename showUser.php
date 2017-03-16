@@ -1,8 +1,9 @@
 <?php
 session_start();
-require 'connection.php';
-require 'User.php';
-require 'Tweet.php';
+require 'src/connection.php';
+require 'src/User.php';
+require 'src/Tweet.php';
+require 'src/Comment.php';
 
 //checking log in state
 if (isset($_SESSION['userId'])) {

@@ -11,7 +11,8 @@ class User {
     private $email;
     private $hashPass;
 
-    public function __construct() {        
+    public function __construct() {
+        
     }
 
     public function getId() {
@@ -53,11 +54,11 @@ class User {
             $stmt = $conn->prepare('INSERT INTO Users(username, email, hash_pass) VALUES (:username, :email, :pass)');
             $result = $stmt->execute(
                     [
-                        'username' => $this->username, 
-                        'email' => $this->email, 
+                        'username' => $this->username,
+                        'email' => $this->email,
                         'pass' => $this->hashPass
                     ]
-                );
+            );
 
             if ($result !== false) {
                 $this->id = $conn->lastInsertId();
@@ -69,9 +70,9 @@ class User {
             );
             $result = $stmt->execute(
                     [
-                        'username' => $this->username, 
+                        'username' => $this->username,
                         'email' => $this->email,
-                        'hash_pass' => $this->hashPass, 
+                        'hash_pass' => $this->hashPass,
                         'id' => $this->id
                     ]
             );
@@ -81,8 +82,8 @@ class User {
         }
         return false;
     }
-    
-    static public function loadUserByEmail(PDO $conn, $mail) {
+
+    public static function loadUserByEmail(PDO $conn, $mail) {
         $stmt = $conn->prepare('SELECT * FROM Users WHERE email=:mail');
         $result = $stmt->execute(['mail' => $mail]);
         if ($result === true && $stmt->rowCount() > 0) {
@@ -97,7 +98,7 @@ class User {
         return null;
     }
 
-    static public function loadUserById(PDO $conn, $id) {
+    public static function loadUserById(PDO $conn, $id) {
         $stmt = $conn->prepare('SELECT * FROM Users WHERE id=:id');
         $result = $stmt->execute(['id' => $id]);
         if ($result === true && $stmt->rowCount() > 0) {
@@ -112,7 +113,7 @@ class User {
         return null;
     }
 
-    static public function loadAllUsers(PDO $conn) {
+    public static function loadAllUsers(PDO $conn) {
         $sql = "SELECT * FROM Users";
         $ret = [];
         $result = $conn->query($sql);
@@ -141,17 +142,9 @@ class User {
         }
         return true;
     }
-    public function passVerify($pass) {        
+
+    public function passVerify($pass) {
         return password_verify($pass, $this->hashPass);
-        
     }
 
 }
-
-$user = new User();
-
-$user->setUsername('mati');
-$user->setEmail('mat@mat.pl');
-$user->setPass('matiiiii');
-
-$user->saveToDB($conn);

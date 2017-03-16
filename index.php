@@ -1,11 +1,12 @@
 <?php
 session_start();
 
-require 'connection.php';
-require 'User.php';
-require 'Tweet.php';
+require 'src/connection.php';
+require 'src/User.php';
+require 'src/Tweet.php';
+require 'src/Comment.php';
 
-//primal logging out functionality
+//primitive logging out functionality
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
     session_destroy();
     exit('Logged Out!');
@@ -13,17 +14,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 
 var_dump($user);
 var_dump($_SESSION);
-//getting ALL tweets
+//creating new tweet
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_SESSION['userId'])) {
-    $tweet = new Tweet;
-    
-    $tweet->setUserId($_SESSION['userId']);
-    $tweet->setText($_POST['text']);
-    $tweet->setCreationDate(date('Y-m-d'));
-    $tweet->saveToDB($conn);
-}
+    if (isset($_POST['text'])) {
+        $tweet = new Tweet;
 
-$tweet = Tweet::loadAllTweets($conn);
+        $tweet->setUserId($_SESSION['userId']);
+        $tweet->setText($_POST['text']);
+        $tweet->setCreationDate(date('Y-m-d'));
+        $tweet->saveToDB($conn);
+//creating new comment        
+    } elseif (isset($_POST['comment'])) {
+        $comm = new Comment;
+
+        $comm->setUserId($_SESSION['userId']);
+        $comm->setText($_POST['comment']);
+        $comm->setCreationDate(date('Y-m-d'));
+        $comm->setTweetId($_POST['btn']);
+        $comm->saveToDB($conn);
+    }
+}
+//loading ALL tweets
+$tweets = Tweet::loadAllTweets($conn);
 ?>
 
 <!DOCTYPE html>
@@ -40,23 +52,43 @@ $tweet = Tweet::loadAllTweets($conn);
             echo '<form action="" method="POST"><input type="submit" name="logout" value="LogOut"/></form>';
         } else {
             echo "Please Log In<br>";
-        echo '<a href="register.php"><button>Register</button></a>';
-        echo '<a href="login.php"><button>Log in</button></a>';
+            echo '<a href="register.php"><button>Register</button></a>';
+            echo '<a href="login.php"><button>Log in</button></a>';
         }
         ?>
+
+        <!--move it higher-->
         <form action="" method="POST">
             <textarea name="text"></textarea>
             <br>
             <input type="submit" value="Add Tweet"/>
         </form>
         <div>
-            <?php 
-            foreach ($tweet as $value) {
-                echo 'Tweet # ' . $value->getId() . ' of user # ' 
-                        . $value->getUserId() . '<br>' . $value->getText() . '<br>'
-                        . 'written on ' . $value->getCreationDate() . '<br><br>';
-            }
-            ?>
+<?php
+
+foreach ($tweets as $tweet) {
+    //loading userName
+    $tweetAuthor = User::loadUserById($conn, $tweet->getUserId());
+    
+    echo 'Tweet # ' . $tweet->getId() . ' of user '
+    . $tweetAuthor->getUsername() . '<br>' . $tweet->getText() . '<br>'
+    . 'written on ' . $tweet->getCreationDate() . '<br><br>';
+
+    //loading comments for each tweet
+    $comments = Comment::loadAllCommentsByTweetId($conn, $tweet->getId());
+    if ($comments) {
+        foreach ($comments as $value) {
+            //loading author's name
+            $commAuthor = User::loadUserById($conn, $value->getUserId());
+        echo 'comment from ' . $commAuthor->getUsername() . '<br>' . 
+             $value->getText() . '<br>' . 'created on: ' . $value->getCreationDate() . '<br><br>';
+        }
+    }
+    //comment form for each tweet
+    echo '<form action="" method="POST"><input name="comment" placeholder="write your comment..."/>'
+    . '<button name="btn" value="' . $tweet->getId() . '">Add comment</button></form>';
+}
+?>
         </div>
     </body>
 </html>

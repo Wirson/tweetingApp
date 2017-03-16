@@ -9,3 +9,16 @@ creationDate DATE,
 PRIMARY KEY(id),
 FOREIGN KEY(userId) REFERENCES Users(id)
 );
+
+CREATE TABLE Comment
+(
+id INT AUTO_INCREMENT,
+userId INT NOT NULL,
+tweetId INT NOT NULL
+text TEXT,
+creationDate DATE,
+PRIMARY KEY(id),
+FOREIGN KEY(tweetId) REFERENCES Tweet(id)
+);
+
+ALTER TABLE `Comment` ADD FOREIGN KEY (`tweetId`) REFERENCES `Tweet`(`id`) ON DELETE CASCADE ON UPDATE RESTRICT;

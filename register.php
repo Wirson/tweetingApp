@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'connection.php';
-require 'User.php';
+require 'src/connection.php';
+require 'src/User.php';
 var_dump($_SESSION);
 if (isset($_SESSION['userId'])) {
     echo 'Jesteś zalogowany!' . '<br>';

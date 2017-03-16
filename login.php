@@ -1,7 +1,7 @@
 <?php
 session_start();
-require 'connection.php';
-require 'User.php';
+require 'src/connection.php';
+require 'src/User.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = User::loadUserByEmail($conn, $_POST['mail']);
@@ -10,6 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION ['userId'] = $user->getId();
             $_SESSION ['email'] = $user->getEmail();
             $_SESSION ['userName'] = $user->getUsername();
+        } else {
+            echo 'Wrong e-mail or password!';
         }
     }
 }
