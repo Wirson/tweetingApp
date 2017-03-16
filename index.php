@@ -49,6 +49,7 @@ $tweets = Tweet::loadAllTweets($conn);
         <?php
         if (isset($_SESSION['userId'])) {
             echo '<a href="showUser.php"><button>Your Profile</button></a>';
+            echo '<a href="messages.php"><button>Your Messages</button></a>';
             echo '<form action="" method="POST"><input type="submit" name="logout" value="LogOut"/></form>';
         } else {
             echo "Please Log In<br>";

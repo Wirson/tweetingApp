@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION ['userId'] = $user->getId();
             $_SESSION ['email'] = $user->getEmail();
             $_SESSION ['userName'] = $user->getUsername();
+            header("Location: index.php");
         } else {
             echo 'Wrong e-mail or password!';
         }

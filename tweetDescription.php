@@ -13,7 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'GET') {
 //getting tweet
 $tweet = Tweet::loadTweetById($conn, $tweetId);
 var_dump($tweet);
-//usuwanie posta
+
+//deleting tweet
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
     $tweet->deleteTweet($conn);
     echo '<a href="showUser.php"><button>Your Profile</button></a>';
@@ -52,6 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
                     echo 'comment from ' . $commAuthor->getUsername() . '<br>' .
                     $value->getText() . '<br>' . 'created on: ' . $value->getCreationDate() . '<br><br>';
                 }
+            } else {
+                echo 'no comments!';
             }
             ?>
         </div>

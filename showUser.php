@@ -36,8 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['pass'])) {
     }
 }
 
-//showing all user's posts
-$tweets = Tweet::loadAllTweetsByUserId($conn, $loggedUser->getId());
+
 var_dump($loggedUser);
 ?>
 <!DOCTYPE html>
@@ -70,10 +69,16 @@ var_dump($loggedUser);
         <hr>
         <h3>Your Tweets:</h3>
         <?php
-        foreach ($tweets as $value) {
-            $id = $value->getId();
-            echo '<a href="tweetDescription.php?id=' . $id . '">' . 'Tweet # ';
-            echo $id . '</a>' . '<br>' . $value->getText() . '<br>';
+        //showing all user's posts
+        $tweets = Tweet::loadAllTweetsByUserId($conn, $loggedUser->getId());
+        if ($tweets) {
+            foreach ($tweets as $value) {
+                $id = $value->getId();
+                echo '<a href="tweetDescription.php?id=' . $id . '">' . 'Tweet # ';
+                echo $id . '</a>' . '<br>' . $value->getText() . '<br>';
+            }
+        } else {
+            echo 'no tweets!';
         }
         ?>
     </body>
