@@ -4,20 +4,25 @@ require 'src/connection.php';
 require 'src/User.php';
 require 'src/Tweet.php';
 require 'src/Comment.php';
-var_dump($_SESSION);
-//pobieranie id posta
-if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    $tweetId = $_GET['id'];
-    var_dump($tweetId);
-}
-//getting tweet
-$tweet = Tweet::loadTweetById($conn, $tweetId);
-var_dump($tweet);
 
 //deleting tweet
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
+    $tweet = Tweet::loadTweetById($conn, $_GET['id']);
     $tweet->deleteTweet($conn);
-    echo '<a href="showUser.php"><button>Your Profile</button></a>';
+    header('Location: showUser.php');
+}
+
+//loading post id from GET
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    $tweetId = $_GET['id'];
+}
+
+//loading tweet
+$tweet = Tweet::loadTweetById($conn, $tweetId);
+
+//check wheter current user is an author of that tweet, due to get method
+if ($tweet->getUserId() != $_SESSION['userId']) {
+    header('Location: showUser.php');
 }
 ?>
 <!DOCTYPE html>

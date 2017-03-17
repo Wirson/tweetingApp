@@ -9,7 +9,7 @@ require 'src/Comment.php';
 if (isset($_SESSION['userId'])) {
     $loggedUser = User::loadUserById($conn, $_SESSION['userId']);
 } else {
-    exit('No logged user!');
+    exit(header("Location: index.php"));
 }
 
 //primal logging out functionality
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['logout'])) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete'])) {
     $loggedUser->delete($conn);
     session_destroy();
-    exit('User deleted!'); //add deleting from db
+    exit('User deleted!');
 }
 
 //conditional for updating DB
@@ -35,8 +35,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['pass'])) {
         echo "Change data and password";
     }
 }
+//saving comment
+if (isset($_POST['comment']) && !empty($_POST['comment']) && strlen($_POST['comment']) < 60) {
+        $comm = new Comment;
 
-
+        $comm->setUserId($_SESSION['userId']);
+        $comm->setText($_POST['comment']);
+        $comm->setCreationDate(date('Y-m-d'));
+        $comm->setTweetId($_POST['btn']);
+        $comm->saveToDB($conn);
+    }
 var_dump($loggedUser);
 ?>
 <!DOCTYPE html>
@@ -48,11 +56,13 @@ var_dump($loggedUser);
     </head>
     <body>
         <a href="index.php"><button>Go to main page!</button></a>
+        <a href="messages.php"><button>Your Messages</button></a>
         <form action="" method="POST">
             <input type="submit" name="logout" value="LogOut"/>
         </form>
         <h1>Update your data!</h1>
-        <p>Your ID: <?php echo $loggedUser->getId() ?></p>
+        <p>Hi <?php echo $_SESSION['userName']; ?>!</p>
+        <p>Your ID: <?php echo $_SESSION['userId']; ?></p>
         <form action="" method="POST">            
             <label for="user">Username</label>
             <input type="text" name="user" value="<?php echo $loggedUser->getUsername(); ?>"/>
@@ -76,6 +86,20 @@ var_dump($loggedUser);
                 $id = $value->getId();
                 echo '<a href="tweetDescription.php?id=' . $id . '">' . 'Tweet # ';
                 echo $id . '</a>' . '<br>' . $value->getText() . '<br>';
+                //loading comments for each tweet
+                $comments = Comment::loadAllCommentsByTweetId($conn, $value->getId());
+                if ($comments) {
+                    foreach ($comments as $value) {
+                        //loading author's name
+                        $commAuthor = User::loadUserById($conn, $value->getUserId());
+                        echo '<br>comment from ' . $commAuthor->getUsername() . '<br>' .
+                        $value->getText() . '<br>' . 'created on: ' . $value->getCreationDate() . '<br>';
+                    }
+                }
+                //comment form for each tweet
+                echo '<form action="" method="POST"><input name="comment" placeholder="write your comment..."/>'
+                . '<button name="btn" value="' . $value->getId() . '">Add comment</button></form>';
+                echo '</div>';
             }
         } else {
             echo 'no tweets!';

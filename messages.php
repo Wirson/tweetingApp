@@ -8,7 +8,6 @@ require 'src/User.php';
 require 'src/Message.php';
 //loading messages
 $messages = Message::loadAllMessagesByRecipient($conn, $_SESSION['userId']);
-
 var_dump($_POST);
 if (isset($_POST['text'])) {
         $msg = new Message;
@@ -17,7 +16,7 @@ if (isset($_POST['text'])) {
         $msg->setRecipient($_POST['recipient']);
         $msg->setText($_POST['text']);
         $msg->setCreationDate(date('Y-m-d'));
-        $msg->setStatus(0);
+        $msg->setStatus(0); //0 is default unread
         $msg->saveToDB($conn);
     }
 ?>
@@ -31,7 +30,7 @@ if (isset($_POST['text'])) {
     <body>
         <a href="index.php"><button>Main Page</button></a>
         <a href="showUser.php"><button>Your Profile</button></a>
-        <h1>Messages:</h1>
+        <h4>Hi <?php echo $_SESSION['userName']; ?>! Messages:</h4>
         <?php
         if ($messages) {
             foreach ($messages as $msg) {

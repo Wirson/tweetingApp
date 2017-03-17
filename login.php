@@ -2,7 +2,11 @@
 session_start();
 require 'src/connection.php';
 require 'src/User.php';
-
+//do no let logged user log in again
+if (isset($_SESSION['userId'])) {
+    header("Location: index.php");
+}
+//check user, head to main page
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user = User::loadUserByEmail($conn, $_POST['mail']);
     if ($user != false) {

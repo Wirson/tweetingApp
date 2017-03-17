@@ -73,7 +73,7 @@ class Message {
         $result = [];
         if ($ret !== false && $stmt->rowCount() != 0) {
             foreach ($stmt as $row) {
-                $loadedMess = new Messages();
+                $loadedMess = new Message();
                 $loadedMess->id = $row['id'];
                 $loadedMess->sender = $row['sender'];
                 $loadedMess->recipient = $row['recipient'];

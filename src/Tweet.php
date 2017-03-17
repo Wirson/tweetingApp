@@ -82,7 +82,7 @@ class Tweet {
     }
 
     public static function loadAllTweets(PDO $conn) {
-        $sql = "SELECT * FROM Tweet";
+        $sql = "SELECT * FROM Tweet ORDER BY creationDate DESC";
         $ret = [];
         $result = $conn->query($sql);
         if ($result !== false && $result->rowCount() != 0) {
